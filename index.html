@@ -1,0 +1,214 @@
+<!--
+Copyright (c) 2018 by Szymon Wiktor. All Rights Reserved.
+ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Generator JW</title>
+<style media="screen">
+#zebranie1
+{
+  display: none;
+  text-align: center;
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#zebranie2
+  {
+    display: none;
+    text-align: center;
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #zebranie3
+    {
+      display: none;
+      text-align: center;
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+div.opcje
+{
+  text-align: center;
+}
+
+div.wynik
+{
+  text-align: center;
+}
+
+div.pobieranie
+{
+  text-align: center;
+}
+</style>
+
+  <script type="text/javascript">
+  var wspolczynnik_czasu = 10343666.6875;
+  var wspolczynnik_klatek = 31;
+  var sql = "";
+  var kwerenda = '';
+function wybor(id)
+{
+
+switch (id)
+{
+
+case '1':
+document.getElementById('zebranie1').style.display='block';
+document.getElementById('zebranie2').style.display='none';
+document.getElementById('zebranie3').style.display='none';
+document.getElementById('wynik').innerHTML ='';
+sql = "";
+kwerenda = ''
+break;
+
+case '2':
+document.getElementById('zebranie1').style.display='none';
+document.getElementById('zebranie2').style.display='block';
+document.getElementById('zebranie3').style.display='none';
+document.getElementById('wynik').innerHTML ='';
+sql = "";
+kwerenda = ''
+break;
+
+case '3':
+document.getElementById('zebranie1').style.display='none';
+document.getElementById('zebranie2').style.display='none';
+document.getElementById('zebranie3').style.display='block';
+document.getElementById('wynik').innerHTML ='';
+sql = "";
+kwerenda = ''
+break;
+}}
+
+function Generuj(id1, id2, opis)
+{
+var id1_tab = document.getElementById(id1).value.split(':');
+var id2_tab = document.getElementById(id2).value.split(':');
+
+var id1_s = (+id1_tab[0]) * 60 * 60 + (+id1_tab[1]) * 60 + (+id1_tab[2]);
+var id2_s = (+id2_tab[0]) * 60 * 60 + (+id2_tab[1]) * 60 + (+id2_tab[2]);
+
+var id1_StartTimeTicks = Math.floor(id1_s * wspolczynnik_czasu);
+var id1_StartFrame = id1_s * wspolczynnik_klatek;
+
+var id1_diff_id2 = id2_s - id1_s;
+var id1_DurationTicks  = Math.floor(id1_diff_id2 * wspolczynnik_czasu);
+var id1_FrameCount = id1_diff_id2 * wspolczynnik_klatek;
+
+kwerenda = "UPDATE `VideoMarker` set `StartTimeTicks`=" + id1_StartTimeTicks + ", `DurationTicks`=" +id1_DurationTicks + ", `StartFrame`=" +id1_StartFrame+", `FrameCount`="+id1_FrameCount+" where `Label`='" +opis+"'; <br>";
+sql = sql + kwerenda;
+document.getElementById('wynik').innerHTML = sql;
+}
+
+function download() {
+    var count = (sql.match(/<br>/g) || []).length;
+    var down = sql;
+    for (var i = count; i != 0; i--)
+    {
+      down = down.replace("<br>", "");
+    }
+    var dzis = new Date();
+    var dzien = dzis.getDate();
+    dzien = dzien.toString();
+    var miesiac = dzis.getMonth() + 1;
+    miesiac = miesiac.toString();
+    var rok = dzis.getFullYear();
+    rok - rok.toString();
+    var nazwa = dzien + miesiac + rok + '.sql';
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(down));
+    element.setAttribute('download', nazwa);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+  </script>
+  </head>
+
+  <body>
+<div class="opcje">
+<label>Zebranie tydzień CHTR pojedyńcze</label><input type="radio" name="zebranie" onclick="wybor('1')"><br>
+<label>Zebranie tydzień CHTR podwójne</label><input type="radio" name="zebranie"onclick="wybor('2')"><br>
+<label>Zebranie niedziela</label><input type="radio" name="zebranie"onclick="wybor('3')"><br>
+</div>
+<br>
+<div id='zebranie1'>
+<fieldset>
+  <legend>Podaj poszczególne czasy (początki)</legend>
+  <label>Pieśń 1</label> <input type="text" placeholder="HH:MM:SS" id="piesn1_1" maxlength="8"> <br>
+  <label>Wstęp</label> <input type="text" placeholder="HH:MM:SS" id="wstep_1" maxlength="8" onchange="Generuj('piesn1_1','wstep_1','Pieśń 1')"> <br>
+  <label>Skarby 1 (Punkt)</label> <input type="text" placeholder="HH:MM:SS" id="skarby1_1" maxlength="8" onchange="Generuj('wstep_1','skarby1_1','Wstęp')"> <br>
+  <label>Wyszukujemy duchowe skarby</label> <input type="text" placeholder="HH:MM:SS" id="skarby2_1" maxlength="8" onchange="Generuj('skarby1_1','skarby2_1','Skarby 1 (Punkt)')"> <br>
+  <label>Czytanie Biblii</label> <input type="text" placeholder="HH:MM:SS" id="czytanie_1" maxlength="8" onchange="Generuj('skarby2_1','czytanie_1','Wyszukujemy duchowe skarby')"> <br>
+  <label>Pierwsza rozmowa</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa1_1" maxlength="8" onchange="Generuj('czytanie_1','rozmowa1_1','Czytanie Biblii')"> <br>
+  <label>Pierwsze odwiedziny</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa2_1" maxlength="8" onchange="Generuj('rozmowa1_1','rozmowa2_1','Pierwsza rozmowa')"> <br>
+  <label>Studium biblijne</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa3_1" maxlength="8" onchange="Generuj('rozmowa2_1','rozmowa3_1','Pierwsze odwiedziny')"> <br>
+  <label>Pieśń 2</label> <input type="text" placeholder="HH:MM:SS" id="piesn2_1" maxlength="8" onchange="Generuj('rozmowa3_1','piesn2_1','Studium biblijne')"> <br>
+  <label>Chrześcijański tryb życia</label> <input type="text" placeholder="HH:MM:SS" id="chtr1_1" maxlength="8" onchange="Generuj('piesn2_1','chtr1_1','Pieśń 2')"> <br>
+  <label>Zborowe studium Biblii</label> <input type="text" placeholder="HH:MM:SS" id="ksiazka_1" maxlength="8" onchange="Generuj('chtr1_1','ksiazka_1','Chrześcijański tryb życia')"> <br>
+  <label>Powtórka</label> <input type="text" placeholder="HH:MM:SS" id="powtorka_1" maxlength="8" onchange="Generuj('ksiazka_1','powtorka_1','Zborowe studium Biblii')"> <br>
+  <label>Pieśń 3</label> <input type="text" placeholder="HH:MM:SS" id="piesn3_1" maxlength="8" onchange="Generuj('powtorka_1','piesn3_1','Powtórka')"> <br>
+  <label>Całkowity czas pliku</label> <input type="text" placeholder="HH:MM:SS" id="koniec_1" maxlength="8" onchange="Generuj('piesn3_1','koniec_1','Pieśń 3')">
+</fieldset>
+</div>
+
+<div id='zebranie2'>
+<fieldset>
+  <legend>Podaj poszczególne czasy (początki)</legend>
+  <label>Pieśń 1</label> <input type="text" placeholder="HH:MM:SS" id="piesn1_2" maxlength="8"> <br>
+  <label>Wstęp</label> <input type="text" placeholder="HH:MM:SS" id="wstep_2" maxlength="8" onchange="Generuj('piesn1_2','wstep_2','Pieśń 1')"> <br>
+  <label>Skarby 1 (Punkt)</label> <input type="text" placeholder="HH:MM:SS" id="skarby1_2" maxlength="8" onchange="Generuj('wstep_2','skarby1_2','Wstęp')"> <br>
+  <label>Wyszukujemy duchowe skarby</label> <input type="text" placeholder="HH:MM:SS" id="skarby2_2" maxlength="8" onchange="Generuj('skarby1_2','skarby2_2','Skarby 1 (Punkt)')"> <br>
+  <label>Czytanie Biblii</label> <input type="text" placeholder="HH:MM:SS" id="czytanie_2" maxlength="8" onchange="Generuj('skarby2_2','czytanie_2','Wyszukujemy duchowe skarby')"> <br>
+  <label>Pierwsza rozmowa</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa1_2" maxlength="8" onchange="Generuj('czytanie_2','rozmowa1_2','Czytanie Biblii')"> <br>
+  <label>Pierwsze odwiedziny</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa2_2" maxlength="8" onchange="Generuj('rozmowa1_2','rozmowa2_2','Pierwsza rozmowa')"> <br>
+  <label>Studium biblijne</label> <input type="text" placeholder="HH:MM:SS" id="rozmowa3_2" maxlength="8" onchange="Generuj('rozmowa2_2','rozmowa3_2','Pierwsze odwiedziny')"> <br>
+  <label>Pieśń 2</label> <input type="text" placeholder="HH:MM:SS" id="piesn2_2" maxlength="8" onchange="Generuj('rozmowa3_2','piesn2_2','Studium biblijne')"> <br>
+  <label>Chrześcijański tryb życia 1</label> <input type="text" placeholder="HH:MM:SS" id="chtr1_2" maxlength="8" onchange="Generuj('piesn2_2','chtr1_2','Pieśń 2')"> <br>
+  <label>Chrześcijański tryb życia 2</label> <input type="text" placeholder="HH:MM:SS" id="chtr2_2" maxlength="8" onchange="Generuj('chtr1_2','chtr2_2','Chrześcijański tryb życia 1')"> <br>
+  <label>Zborowe studium Biblii</label> <input type="text" placeholder="HH:MM:SS" id="ksiazka_2" maxlength="8" onchange="Generuj('chtr2_2','ksiazka_2','Chrześcijański tryb życia 2')"> <br>
+  <label>Powtórka</label> <input type="text" placeholder="HH:MM:SS" id="powtorka_2" maxlength="8" onchange="Generuj('ksiazka_2','powtorka_2','Zborowe studium Biblii')"> <br>
+  <label>Pieśń 3</label> <input type="text" placeholder="HH:MM:SS" id="piesn3_2" maxlength="8" onchange="Generuj('powtorka_2','piesn3_2','Powtórka')"> <br>
+  <label>Całkowity czas pliku</label> <input type="text" placeholder="HH:MM:SS" id="koniec_2" maxlength="8" onchange="Generuj('piesn3_2','koniec_2','Pieśń 3')">
+</fieldset>
+</div>
+
+<div id='zebranie3'>
+<fieldset>
+  <legend>Podaj poszczególne czasy (początki)</legend>
+  <label>Pieśń 1</label> <input type="text" placeholder="HH:MM:SS" id="piesn1_3" maxlength="8"> <br>
+  <label>Wstęp do wykładu</label> <input type="text" placeholder="HH:MM:SS" id="wstep_3" maxlength="8" onchange="Generuj('piesn1_3','wstep_3','Pieśń 1')"> <br>
+  <label>Wykład</label> <input type="text" placeholder="HH:MM:SS" id="wyklad_3" maxlength="8" onchange="Generuj('wstep_3','wyklad_3','Wstęp do wykładu')"> <br>
+  <label>Po wykładzie</label> <input type="text" placeholder="HH:MM:SS" id="powykladzie_3" maxlength="8" onchange="Generuj('wyklad_3','powykladzie_3','Wykład')"> <br>
+  <label>Pieśń 2</label> <input type="text" placeholder="HH:MM:SS" id="piesn2_3" maxlength="8" onchange="Generuj('powykladzie_3','piesn2_3','Po wykładzie')"> <br>
+  <label>Strażnica</label> <input type="text" placeholder="HH:MM:SS" id="straznica_3" maxlength="8" onchange="Generuj('piesn2_3','straznica_3','Pieśń 2')"> <br>
+  <label>Pieśń 3</label> <input type="text" placeholder="HH:MM:SS" id="piesn3_3" maxlength="8" onchange="Generuj('straznica_3','piesn3_3','Strażnica')"> <br>
+  <label>Całkowity czas pliku</label> <input type="text" placeholder="HH:MM:SS" id="koniec_3" maxlength="8" onchange="Generuj('piesn3_3','koniec_3','Pieśń 3')">
+</fieldset>
+</div>
+
+<div class="wynik">
+<p id = 'wynik' class="wynik"></p>
+</div>
+
+<div class="pobieranie">
+<input type="button" onclick="download();" value="Pobierz gotowy plik"/>
+<br>
+<br>
+Copyright (c) 2018 by <a href="mailto:sarapter18@wp.pl">Szymon Wiktor</a>. All Rights Reserved.
+</div>
+
+</body>
+</html>
+<!--
+Copyright (c) 2018 by Szymon Wiktor. All Rights Reserved.
+ -->
