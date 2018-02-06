@@ -114,21 +114,21 @@ function download() {
     {
       down = down.replace("<br>", "");
     }
-    var dzis = new Date();
-    var dzien = dzis.getDate();
-    dzien = dzien.toString();
-    var miesiac = dzis.getMonth() + 1;
-    miesiac = miesiac.toString();
-    var rok = dzis.getFullYear();
-    rok - rok.toString();
-    var nazwa = 'zebranie.sql';
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(down));
-    element.setAttribute('download', nazwa);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+        constructor(platform: Platform) {
+        platform.ready().then(() => {
+          window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function(dir) {
+            dir.getFile("zebranie.txt", {create:true}, function(file) {
+                var logOb = file;
+                var log = down;
+                logOb.createWriter(function(fileWriter) {
+                    fileWriter.seek(fileWriter.length);
+                    var blob = new Blob([log], {type:'text/plain'});
+                    fileWriter.write(blob);
+                }, function(e){console.error(e);});
+            });
+          });
+        });
+      }
 }
 
   </script>
